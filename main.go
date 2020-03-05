@@ -4,21 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
-	"strings"
+
+	solver "./lib"
 )
-
-// Room represents room with x, y and name values
-type Room struct {
-	name string
-	x, y int
-}
-
-// Link represents links between two rooms
-type Link struct {
-	room1 string
-	room2 string
-}
 
 // Error in order to handle error
 type Error struct {
@@ -27,10 +15,9 @@ type Error struct {
 }
 
 var dataStr string
-var rooms []Room
-var links []Link
+
+// var rooms []Room
 var error Error
-var farm [][]string
 
 func main() {
 
@@ -43,42 +30,11 @@ func main() {
 		return
 	}
 
-	ParseDataFromFile()
+	solver.ParseDataFromFile(dataStr)
 
-	fmt.Println(rooms)
-	fmt.Println(links)
+	solver.MakeFarm()
 
-	MakeFarm()
-
-	fmt.Println(farm)
-
-}
-
-// MakeFarm to create 2d matrix with rooms
-func MakeFarm() {
-	var maxX int
-	var maxY int
-
-	for _, room := range rooms {
-		if room.x > maxX {
-			maxX = room.x
-		}
-		if room.y > maxY {
-			maxY = room.y
-		}
-	}
-
-	maxX++
-	maxY++
-
-	farm = make([][]string, maxY)
-	for i := 0; i < maxY; i++ {
-		farm[i] = make([]string, maxX)
-	}
-
-	for _, room := range rooms {
-		farm[room.y][room.x] = room.name
-	}
+	solver.ConnectRooms()
 
 }
 
@@ -118,49 +74,5 @@ func ReadFile() {
 	}
 
 	dataStr = string(dataByteArr)
-
-}
-
-//ParseDataFromFile parsies data from string obtained from .txt file into Structs of Rooms and Links
-func ParseDataFromFile() {
-
-	length := len(dataStr)
-
-	i := 0
-	temp := ""
-	spaceCount := 0
-	xInt, yInt := 0, 0
-	var name string
-	var a []string
-	for i < length {
-		if dataStr[i] == '#' {
-			for dataStr[i] != '\n' {
-				i++
-			}
-			i++
-		} else {
-			for i < length && dataStr[i] != '\n' {
-				temp += string(dataStr[i])
-				if dataStr[i] == ' ' {
-					spaceCount++
-				}
-				i++
-			}
-			i++
-			if spaceCount == 0 {
-				a = strings.Split(temp, "-")
-				links = append(links, Link{a[0], a[1]})
-			} else if spaceCount == 2 {
-				a = strings.Split(temp, " ")
-				name = a[0]
-				xInt, _ = strconv.Atoi(a[1])
-				yInt, _ = strconv.Atoi(a[2])
-				rooms = append(rooms, Room{name, xInt, yInt})
-			}
-			temp = ""
-			spaceCount = 0
-		}
-
-	}
 
 }
