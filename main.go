@@ -20,13 +20,27 @@ type Link struct {
 	room2 string
 }
 
+// Error in order to handle error
+type Error struct {
+	message string
+	occured bool
+}
+
 var dataStr string
 var rooms []Room
 var links []Link
+var error Error
 
 func main() {
 
+	error.occured = false
+
 	ReadFile()
+
+	if error.occured {
+		fmt.Println(error.message)
+		return
+	}
 
 	ParseDataFromFile()
 
@@ -44,11 +58,13 @@ func ReadFile() {
 	}
 
 	if length == 0 {
-		fmt.Println("File name missing")
+		error.occured = true
+		error.message = "File name missing"
 		return
 	}
 	if length != 1 {
-		fmt.Println("Too many arguments")
+		error.occured = true
+		error.message = "Too many arguments"
 		return
 	}
 
@@ -56,13 +72,15 @@ func ReadFile() {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		fmt.Println(err.Error())
+		error.occured = true
+		error.message = err.Error()
 		return
 	}
 
 	dataByteArr, err := ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Println(err.Error())
+		error.occured = true
+		error.message = err.Error()
 		return
 	}
 
