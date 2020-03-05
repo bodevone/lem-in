@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-// Room represents room with row, col and name values
+// Room represents room with x, y and name values
 type Room struct {
-	name     string
-	row, col int
+	name string
+	x, y int
 }
 
 // Link represents links between two rooms
@@ -30,6 +30,7 @@ var dataStr string
 var rooms []Room
 var links []Link
 var error Error
+var farm [][]string
 
 func main() {
 
@@ -46,6 +47,38 @@ func main() {
 
 	fmt.Println(rooms)
 	fmt.Println(links)
+
+	MakeFarm()
+
+	fmt.Println(farm)
+
+}
+
+// MakeFarm to create 2d matrix with rooms
+func MakeFarm() {
+	var maxX int
+	var maxY int
+
+	for _, room := range rooms {
+		if room.x > maxX {
+			maxX = room.x
+		}
+		if room.y > maxY {
+			maxY = room.y
+		}
+	}
+
+	maxX++
+	maxY++
+
+	farm = make([][]string, maxY)
+	for i := 0; i < maxY; i++ {
+		farm[i] = make([]string, maxX)
+	}
+
+	for _, room := range rooms {
+		farm[room.y][room.x] = room.name
+	}
 
 }
 
