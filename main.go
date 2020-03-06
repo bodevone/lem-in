@@ -28,9 +28,9 @@ func main() {
 		return
 	}
 
-	solver.MakeFarm()
-
 	solver.ConnectRooms()
+
+	solver.MakeFarm()
 
 }
 

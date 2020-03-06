@@ -1,9 +1,5 @@
 package solver
 
-import (
-	"fmt"
-)
-
 // Point to represent point in farm where to place tunnel
 type Point struct {
 	x, y int
@@ -11,6 +7,8 @@ type Point struct {
 
 // Stack implementation
 type Stack []Point
+
+var tunnels []Point
 
 // Push to push new Point into stack and return stack
 func (s Stack) Push(v Point) Stack {
@@ -40,29 +38,26 @@ func BFS(room1, room2 Room) {
 
 	var previousPointMap = make(map[Point]Point)
 
-	dirs := [][]int{{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}}
-	//dirs := [][]int{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
+	dirs := [][]int{{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {1, -1}, {-1, -1}, {-1, 1}}
 
 	visited := []Point{start}
 
 	//TODO: Remove 2d array and just write array of rooms and tunnels
 	for len(stack) > 0 {
-		// fmt.Println(stack)
+
 		var point Point
 		stack, point = stack.Shift()
-		// fmt.Println(point)
+
 		if point.x == end.x && point.y == end.y {
 			break
 		}
+
 		for i := 0; i < len(dirs); i++ {
 			newPoint := Point{point.x + dirs[i][0], point.y + dirs[i][1]}
-			if newPoint.x >= 0 && newPoint.x < lenX && newPoint.y >= 0 && newPoint.y < lenY && !ExiststInVisisted(newPoint, visited) {
-				if (newPoint.x == end.x && newPoint.y == end.y) || farm[newPoint.y][newPoint.x] == "" {
-					stack = stack.Push(newPoint)
-					visited = append(visited, newPoint)
-					previousPointMap[newPoint] = point
-					fmt.Println(previousPointMap)
-				}
+			if !ExiststInVisisted(newPoint, visited) && ((newPoint.x == end.x && newPoint.y == end.y) || !BarrierExists(newPoint.x, newPoint.y)) {
+				stack = stack.Push(newPoint)
+				visited = append(visited, newPoint)
+				previousPointMap[newPoint] = point
 			}
 		}
 	}
@@ -71,25 +66,32 @@ func BFS(room1, room2 Room) {
 
 	for ValueExists(previousPointMap, end) {
 		point := previousPointMap[end]
+		if point.x == start.x && point.y == start.y {
+			break
+		}
 		shortestPath = append(shortestPath, point)
 		end = point
 	}
 
-	for _, point := range shortestPath[:len(shortestPath)-1] {
-		farm[point.y][point.x] = "X"
-	}
+	tunnels = append(tunnels, shortestPath...)
 
-	for i := range farm {
-		for j := range farm[i] {
-			if farm[i][j] != "" {
-				fmt.Print(farm[i][j])
-			} else {
-				fmt.Print(".")
+}
 
-			}
+// BarrierExists to check if any barrier exists on the way
+func BarrierExists(x, y int) bool {
+	for _, room := range rooms {
+		if room.x == x && room.y == y {
+			return true
 		}
-		fmt.Println()
 	}
+
+	for _, tunnel := range tunnels {
+		if tunnel.x == x && tunnel.y == y {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ValueExists to check if given Point exists in map
