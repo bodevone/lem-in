@@ -4,6 +4,12 @@ import (
 	"fmt"
 )
 
+// Error in order to handle error
+type Error struct {
+	message string
+	occured bool
+}
+
 // Room represents room with x and y values
 type Room struct {
 	x, y int
@@ -13,6 +19,19 @@ type Room struct {
 type Link struct {
 	room1 string
 	room2 string
+}
+
+var error Error
+
+// SetError to define found Error
+func SetError(message string) {
+	error.occured = true
+	error.message = message
+}
+
+// GetError to check if Error exists
+func GetError() (bool, string) {
+	return error.occured, error.message
 }
 
 var rooms = make(map[string]Room)

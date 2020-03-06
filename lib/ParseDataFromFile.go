@@ -14,7 +14,6 @@ func ParseDataFromFile(dataStr string) {
 	i := 0
 	temp := ""
 	spaceCount := 0
-	xInt, yInt := 0, 0
 	var name string
 	var a []string
 	for i < length {
@@ -38,8 +37,16 @@ func ParseDataFromFile(dataStr string) {
 			} else if spaceCount == 2 {
 				a = strings.Split(temp, " ")
 				name = a[0]
-				xInt, _ = strconv.Atoi(a[1])
-				yInt, _ = strconv.Atoi(a[2])
+				xInt, err1 := strconv.Atoi(a[1])
+				yInt, err2 := strconv.Atoi(a[2])
+				if err1 != nil {
+					SetError(err1.Error())
+					return
+				}
+				if err2 != nil {
+					SetError(err2.Error())
+					return
+				}
 				rooms[name] = Room{xInt, yInt}
 			}
 			temp = ""

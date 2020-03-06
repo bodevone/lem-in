@@ -8,29 +8,25 @@ import (
 	solver "./lib"
 )
 
-// Error in order to handle error
-type Error struct {
-	message string
-	occured bool
-}
-
 var dataStr string
-
-// var rooms []Room
-var error Error
 
 func main() {
 
-	error.occured = false
-
 	ReadFile()
 
-	if error.occured {
-		fmt.Println(error.message)
+	occured, message := solver.GetError()
+	if occured {
+		fmt.Println("ERROR: " + message)
 		return
 	}
 
 	solver.ParseDataFromFile(dataStr)
+
+	occured, message = solver.GetError()
+	if occured {
+		fmt.Println("ERROR: " + message)
+		return
+	}
 
 	solver.MakeFarm()
 
@@ -47,13 +43,11 @@ func ReadFile() {
 	}
 
 	if length == 0 {
-		error.occured = true
-		error.message = "File name missing"
+		solver.SetError("File name missing")
 		return
 	}
 	if length != 1 {
-		error.occured = true
-		error.message = "Too many arguments"
+		solver.SetError("Too many arguments")
 		return
 	}
 
@@ -61,15 +55,13 @@ func ReadFile() {
 
 	file, err := os.Open(fileName)
 	if err != nil {
-		error.occured = true
-		error.message = err.Error()
+		solver.SetError(err.Error())
 		return
 	}
 
 	dataByteArr, err := ioutil.ReadAll(file)
 	if err != nil {
-		error.occured = true
-		error.message = err.Error()
+		solver.SetError(err.Error())
 		return
 	}
 
