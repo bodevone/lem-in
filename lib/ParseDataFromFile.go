@@ -1,7 +1,6 @@
 package solver
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -54,8 +53,5 @@ func ParseDataFromFile(dataStr string) {
 		}
 
 	}
-
-	fmt.Println(rooms)
-	fmt.Println(links)
 
 }

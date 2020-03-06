@@ -1,9 +1,5 @@
 package solver
 
-import (
-	"fmt"
-)
-
 // Error in order to handle error
 type Error struct {
 	message string
@@ -74,7 +70,5 @@ func MakeFarm() {
 	for name, room := range rooms {
 		farm[room.y][room.x] = name
 	}
-
-	fmt.Println(farm)
 
 }
