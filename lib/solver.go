@@ -19,6 +19,9 @@ var rooms = make(map[string]Room)
 var links []Link
 var farm [][]string
 
+var lenX int
+var lenY int
+
 // ConnectRooms to connect two rooms for the current state of farm
 func ConnectRooms() {
 	link := links[0]
@@ -27,31 +30,26 @@ func ConnectRooms() {
 
 	BFS(room1, room2)
 
-	fmt.Println(room1)
-	fmt.Println(room2)
-
 }
 
 // MakeFarm to create 2d matrix with rooms
 func MakeFarm() {
-	var maxX int
-	var maxY int
 
 	for _, room := range rooms {
-		if room.x > maxX {
-			maxX = room.x
+		if room.x > lenX {
+			lenX = room.x
 		}
-		if room.y > maxY {
-			maxY = room.y
+		if room.y > lenY {
+			lenY = room.y
 		}
 	}
 
-	maxX++
-	maxY++
+	lenX++
+	lenY++
 
-	farm = make([][]string, maxY)
-	for i := 0; i < maxY; i++ {
-		farm[i] = make([]string, maxX)
+	farm = make([][]string, lenY)
+	for i := 0; i < lenY; i++ {
+		farm[i] = make([]string, lenX)
 	}
 
 	for name, room := range rooms {
