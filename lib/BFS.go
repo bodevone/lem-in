@@ -8,8 +8,6 @@ type Point struct {
 // Stack implementation
 type Stack []Point
 
-var tunnels []Point
-
 // Push to push new Point into stack and return stack
 func (s Stack) Push(v Point) Stack {
 	return append(s, v)
@@ -42,7 +40,6 @@ func BFS(room1, room2 Room) {
 
 	visited := []Point{start}
 
-	//TODO: Remove 2d array and just write array of rooms and tunnels
 	for len(stack) > 0 {
 
 		var point Point
@@ -54,11 +51,22 @@ func BFS(room1, room2 Room) {
 
 		for i := 0; i < len(dirs); i++ {
 			newPoint := Point{point.x + dirs[i][0], point.y + dirs[i][1]}
-			if !ExiststInVisisted(newPoint, visited) && ((newPoint.x == end.x && newPoint.y == end.y) || !BarrierExists(newPoint.x, newPoint.y)) {
+
+			// for j := 0; j < len(dirs); j++ {
+			// 	newPoint2 := Point{newPoint.x + dirs[j][0], newPoint.y + dirs[j][1]}
+			// 	if IsValid(newPoint, visited, end) && IsValid(newPoint2, visited, end) {
+			// 		stack = stack.Push(newPoint)
+			// 		visited = append(visited, newPoint)
+			// 		previousPointMap[newPoint] = point
+			// 	}
+			// }
+
+			if IsValid(newPoint, visited, end) {
 				stack = stack.Push(newPoint)
 				visited = append(visited, newPoint)
 				previousPointMap[newPoint] = point
 			}
+
 		}
 	}
 
@@ -77,9 +85,14 @@ func BFS(room1, room2 Room) {
 
 }
 
+// IsValid to check if given Point is valid
+func IsValid(point Point, visited []Point, end Point) bool {
+	return !ExiststInVisisted(point, visited) && ((point.x == end.x && point.y == end.y) || !BarrierExists(point.x, point.y))
+}
+
 // BarrierExists to check if any barrier exists on the way
 func BarrierExists(x, y int) bool {
-	for _, room := range rooms {
+	for _, room := range graph.rooms {
 		if room.x == x && room.y == y {
 			return true
 		}

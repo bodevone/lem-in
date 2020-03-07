@@ -8,17 +8,6 @@ type Error struct {
 	occured bool
 }
 
-// Room represents room with x and y values
-type Room struct {
-	x, y int
-}
-
-// Link represents links between two rooms
-type Link struct {
-	room1 string
-	room2 string
-}
-
 var error Error
 
 // SetError to define found Error
@@ -32,8 +21,9 @@ func GetError() (bool, string) {
 	return error.occured, error.message
 }
 
-var rooms = make(map[string]Room)
-var links []Link
+var graph Graph
+
+var tunnels []Point
 var farm [][]string
 
 var lenX int
@@ -49,9 +39,9 @@ func ConnectRooms() {
 	// room2 := rooms[link.room2]
 	// BFS(room1, room2)
 
-	for _, link := range links {
-		room1 := rooms[link.room1]
-		room2 := rooms[link.room2]
+	for _, link := range graph.links {
+		room1 := graph.rooms[link.room1]
+		room2 := graph.rooms[link.room2]
 		BFS(room1, room2)
 	}
 
@@ -68,7 +58,7 @@ func MakeFarm() {
 	shiftX := 0
 	shiftY := 0
 
-	for _, room := range rooms {
+	for _, room := range graph.rooms {
 		if room.x > maxX {
 			maxX = room.x
 		}
@@ -107,7 +97,7 @@ func MakeFarm() {
 		farm[i] = make([]string, lenX)
 	}
 
-	for name, room := range rooms {
+	for name, room := range graph.rooms {
 		farm[room.y+shiftY][room.x+shiftX] = name
 	}
 

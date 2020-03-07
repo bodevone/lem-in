@@ -12,15 +12,39 @@ func ParseDataFromFile(dataStr string) {
 
 	i := 0
 	temp := ""
+
+	for dataStr[i] != '\n' {
+		temp += string(dataStr[i])
+		i++
+	}
+	i++
+
+	num, err := strconv.Atoi(temp)
+	if err != nil {
+		SetError("Invalid data format")
+		return
+	}
+	graph.ants = num
+
+	temp = ""
+
 	spaceCount := 0
 	var name string
 	var a []string
+	marker := false
+	start := false
+	end := false
 	for i < length {
-		if dataStr[i] == '#' {
-			for dataStr[i] != '\n' {
+		if dataStr[i] == '#' || dataStr[i] == 'L' {
+			if dataStr[i+1] == '#' {
+				marker = true
+				i = i + 2
+			} else {
+				for dataStr[i] != '\n' {
+					i++
+				}
 				i++
 			}
-			i++
 		} else {
 			for i < length && dataStr[i] != '\n' {
 				temp += string(dataStr[i])
@@ -30,9 +54,23 @@ func ParseDataFromFile(dataStr string) {
 				i++
 			}
 			i++
+			if marker {
+				if temp == "start" {
+					start = true
+				} else if temp == "end" {
+					end = true
+				}
+				temp = ""
+				marker = false
+				continue
+			}
 			if spaceCount == 0 {
 				a = strings.Split(temp, "-")
-				links = append(links, Link{room1: a[0], room2: a[1]})
+				if len(a) != 2 {
+					SetError("Invalid data format")
+					return
+				}
+				graph.links = append(graph.links, Link{a[0], a[1]})
 			} else if spaceCount == 2 {
 				a = strings.Split(temp, " ")
 				name = a[0]
@@ -46,7 +84,18 @@ func ParseDataFromFile(dataStr string) {
 					SetError(err2.Error())
 					return
 				}
-				rooms[name] = Room{xInt, yInt}
+				room := Room{name, xInt, yInt}
+				if start {
+					graph.start = room
+					start = false
+				} else if end {
+					graph.end = room
+					end = false
+				}
+				graph.rooms[name] = room
+			} else {
+				SetError("Invalid data format")
+				return
 			}
 			temp = ""
 			spaceCount = 0

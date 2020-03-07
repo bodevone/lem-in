@@ -20,6 +20,8 @@ func main() {
 		return
 	}
 
+	solver.InitGraph()
+
 	solver.ParseDataFromFile(dataStr)
 
 	occured, message = solver.GetError()
