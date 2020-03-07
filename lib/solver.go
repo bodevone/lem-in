@@ -42,7 +42,7 @@ func ConnectRooms() {
 	for _, link := range graph.links {
 		room1 := graph.rooms[link.room1]
 		room2 := graph.rooms[link.room2]
-		BFS(room1, room2)
+		BFS(*room1, *room2)
 	}
 
 }

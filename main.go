@@ -30,6 +30,8 @@ func main() {
 		return
 	}
 
+	solver.AddNeighbours()
+
 	solver.ConnectRooms()
 
 	solver.MakeFarm()

@@ -84,12 +84,12 @@ func ParseDataFromFile(dataStr string) {
 					SetError(err2.Error())
 					return
 				}
-				room := Room{name, xInt, yInt}
+				room := &Room{name: name, x: xInt, y: yInt}
 				if start {
-					graph.start = room
+					graph.start = *room
 					start = false
 				} else if end {
-					graph.end = room
+					graph.end = *room
 					end = false
 				}
 				graph.rooms[name] = room
