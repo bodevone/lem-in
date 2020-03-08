@@ -32,6 +32,10 @@ func main() {
 
 	solver.FindPathsCombn()
 
+	solver.FindSolution()
+
+	solver.GetIters()
+
 	// solver.ConnectRooms()
 
 	// solver.MakeFarm()

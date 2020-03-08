@@ -3,6 +3,7 @@ package solver
 import (
 	"fmt"
 	"sort"
+	"strconv"
 )
 
 // Graph connects all together
@@ -13,13 +14,18 @@ type Graph struct {
 	end        Room
 	paths      []Path
 	pathsCombs []PathsComb
+	chosenComb PathsComb
 	ants       int
+	mapPaths   map[int]Path
+	decision   map[int]int
+	iterations int
 }
 
 // PathsComb represents combinations of paths which do not intersect
 type PathsComb struct {
-	paths  []Path
-	weight int
+	paths      []Path
+	weight     int
+	iterations int
 }
 
 // Path represents array of array of connected rooms
@@ -54,13 +60,13 @@ func AddNeighbours() {
 		graph.rooms[link.room2].neighbours = append(graph.rooms[link.room2].neighbours, link.room1)
 	}
 
-	for _, room := range graph.rooms {
-		fmt.Print(room.name + ": ")
-		for _, r := range room.neighbours {
-			fmt.Print(r + " ")
-		}
-		fmt.Println()
-	}
+	// for _, room := range graph.rooms {
+	// 	fmt.Print(room.name + ": ")
+	// 	for _, r := range room.neighbours {
+	// 		fmt.Print(r + " ")
+	// 	}
+	// 	fmt.Println()
+	// }
 
 	graph.start = *graph.rooms[graph.start.name]
 	graph.end = *graph.rooms[graph.end.name]
@@ -74,8 +80,8 @@ func FindPaths() {
 	path := []string{}
 	dfs(graph.start.name, path)
 
-	fmt.Print("Paths: ")
-	fmt.Println(graph.paths)
+	// fmt.Print("Paths: ")
+	// fmt.Println(graph.paths)
 	// for _, p := range graph.paths {
 	// 	for _, r := range p.path {
 	// 		fmt.Print(r)
@@ -83,7 +89,11 @@ func FindPaths() {
 	// 	}
 	// 	fmt.Println()
 	// }
-	return
+
+	graph.mapPaths = make(map[int]Path)
+	for _, p := range graph.paths {
+		graph.mapPaths[p.index] = p
+	}
 
 }
 
@@ -161,9 +171,9 @@ func FindPathsCombn() {
 			graph.pathsCombs = append(graph.pathsCombs, pathsComb)
 		}
 	}
-	for _, comb := range graph.pathsCombs {
-		fmt.Println(comb.paths)
-	}
+	// for _, comb := range graph.pathsCombs {
+	// 	fmt.Println(comb.paths)
+	// }
 }
 
 // SortComb to sort paths in combination by index and weight
@@ -196,4 +206,142 @@ func InComb(comb1 PathsComb) bool {
 		}
 	}
 	return false
+}
+
+// FindSolution to find solution
+func FindSolution() {
+	var finalDecision map[int]int
+	minIterations := 9999999
+	var finalComb PathsComb
+
+	for _, comb := range graph.pathsCombs {
+		decision := make(map[int]int)
+
+		for i := 1; i <= graph.ants; i++ {
+			minn := 99999999
+			minnIndex := 0
+			for _, p := range comb.paths {
+				if minn == 0 {
+					minn = p.weight + decision[p.index]
+				}
+
+				if p.weight+decision[p.index] < minn {
+					minn = p.weight + decision[p.index]
+					minnIndex = p.index
+				}
+
+			}
+			decision[minnIndex]++
+		}
+
+		maxx := 0
+		for index, ants := range decision {
+			if graph.mapPaths[index].weight+ants > maxx {
+				maxx = graph.mapPaths[index].weight + ants - 1
+			}
+		}
+		if maxx < minIterations {
+			minIterations = maxx
+			finalDecision = decision
+			finalComb = comb
+		}
+
+	}
+
+	graph.chosenComb = finalComb
+	graph.decision = finalDecision
+	graph.iterations = minIterations
+
+	fmt.Println(graph.iterations)
+}
+
+// GetIters to print output in required format
+func GetIters() {
+
+	answer := make([]string, graph.iterations)
+	newDecision := make(map[int][]int)
+
+	decision := graph.decision
+	ant := 1
+
+	maxx := 0
+	for i, length := range decision {
+		if decision[i] > 0 {
+			if length > maxx {
+				maxx = length
+			}
+		}
+	}
+
+	for i := 0; i < maxx; i++ {
+		for pathIndex := range decision {
+			if decision[pathIndex] > i {
+				newDecision[pathIndex] = append(newDecision[pathIndex], ant)
+				ant++
+			}
+		}
+	}
+
+	ants := make([]int, graph.ants)
+	antsPath := make([]int, graph.ants)
+	movingAnts := []int{}
+
+	for i := 0; i < graph.iterations; i++ {
+		for pathIndex, arr := range newDecision {
+			if len(newDecision[pathIndex]) > 0 {
+				if i < len(arr) {
+					movingAnts = append(movingAnts, arr[i])
+					antsPath[arr[i]-1] = pathIndex
+
+				}
+			}
+
+		}
+
+		movingAntsNext := []int{}
+		for _, ant := range movingAnts {
+			ants[ant-1]++
+
+			if ants[ant-1] == graph.mapPaths[antsPath[ant-1]].weight {
+				continue
+			} else {
+				movingAntsNext = append(movingAntsNext, ant)
+			}
+		}
+
+		notFirst := false
+		for _, ant := range movingAnts {
+			if notFirst {
+				answer[i] += " "
+			}
+			answer[i] += "L" + strconv.Itoa(ant) + "-" + string(graph.mapPaths[antsPath[ant-1]].path[ants[ant-1]])
+			notFirst = true
+		}
+
+		movingAnts = movingAntsNext
+	}
+	for _, ans := range answer {
+		fmt.Println(ans)
+
+	}
+
+	// fmt.Println(answer)
+
+	// for i := 0; i < graph.iterations; i++ {
+
+	// 	for pathIndex, ants := range newDecision {
+	// 		if len(ants) > 0 {
+	// 			for j := 0; j < i+1; j++ {
+	// 				for antName, roomInd := range ants[j] {
+	// 					if roomInd == graph.mapPaths[pathIndex].weight {
+	// 						continue
+	// 					}
+	// 					answer[i] += "L" + string(antName) + " " + string(graph.mapPaths[pathIndex].path[ants[j][antName]]+1)
+	// 					ants[j][antName]++
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+
 }
