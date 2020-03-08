@@ -1,9 +1,47 @@
 package solver
 
 import (
+	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
+
+// ReadFile reads .txt file from argument and puts it into string
+func ReadFile() string {
+	args := os.Args[1:]
+	length := 0
+	for i := range args {
+		length = i + 1
+	}
+
+	if length == 0 {
+		SetError("File name missing")
+		return ""
+	}
+	if length != 1 {
+		SetError("Too many arguments")
+		return ""
+	}
+
+	fileName := args[0]
+
+	file, err := os.Open(fileName)
+	if err != nil {
+		SetError(err.Error())
+		return ""
+	}
+
+	dataByteArr, err := ioutil.ReadAll(file)
+	if err != nil {
+		SetError(err.Error())
+		return ""
+	}
+
+	dataStr := string(dataByteArr)
+	return dataStr
+
+}
 
 //ParseDataFromFile parsies data from string obtained from .txt file into Structs of Rooms and Links
 func ParseDataFromFile(dataStr string) {
