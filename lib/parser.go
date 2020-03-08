@@ -119,11 +119,11 @@ func ParseDataFromFile(dataStr string) {
 				xInt, err1 := strconv.Atoi(a[1])
 				yInt, err2 := strconv.Atoi(a[2])
 				if err1 != nil {
-					SetError(err1.Error())
+					SetError("Invalid data format")
 					return
 				}
 				if err2 != nil {
-					SetError(err2.Error())
+					SetError("Invalid data format")
 					return
 				}
 				room := &Room{name: name, x: xInt, y: yInt}
@@ -134,7 +134,13 @@ func ParseDataFromFile(dataStr string) {
 					graph.end = *room
 					end = false
 				}
-				graph.rooms[name] = room
+				if !InRooms(name) {
+					graph.rooms[name] = room
+				} else {
+					SetError("Duplicated room")
+					return
+				}
+
 			} else {
 				SetError("Invalid data format")
 				return
@@ -145,4 +151,14 @@ func ParseDataFromFile(dataStr string) {
 
 	}
 
+}
+
+// InRooms to check if given room is already present
+func InRooms(room string) bool {
+	for r := range graph.rooms {
+		if r == room {
+			return true
+		}
+	}
+	return false
 }

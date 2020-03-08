@@ -19,7 +19,13 @@ func main() {
 	solver.InitGraph()
 
 	solver.ParseDataFromFile(dataStr)
+	occured, message = solver.GetError()
+	if occured {
+		fmt.Println("ERROR: " + message)
+		return
+	}
 
+	solver.CheckError()
 	occured, message = solver.GetError()
 	if occured {
 		fmt.Println("ERROR: " + message)
@@ -27,7 +33,6 @@ func main() {
 	}
 
 	solver.AddNeighbours()
-
 	occured, message = solver.GetError()
 	if occured {
 		fmt.Println("ERROR: " + message)
@@ -35,15 +40,20 @@ func main() {
 	}
 
 	solver.FindPaths()
+	if occured {
+		fmt.Println("ERROR: " + message)
+		return
+	}
 
 	solver.FindPathsCombn()
 
+	solver.PrintAll()
+
 	solver.FindSolution()
 
-	solver.GetIters()
+	solver.GetSolution()
 
 	// solver.ConnectRooms()
-
 	// solver.MakeFarm()
 
 }

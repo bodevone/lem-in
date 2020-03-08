@@ -48,9 +48,52 @@ type Link struct {
 	room2 string
 }
 
+// Error in order to handle error
+type Error struct {
+	message string
+	occured bool
+}
+
+var error Error
+
+// SetError to define found Error
+func SetError(message string) {
+	error.occured = true
+	error.message = message
+}
+
+// GetError to check if Error exists
+func GetError() (bool, string) {
+	return error.occured, error.message
+}
+
+var graph Graph
+
 // InitGraph to make map filed in Graph
 func InitGraph() {
 	graph.rooms = make(map[string]*Room)
+	maxIters = 9999
+}
+
+// CheckError to check for errors
+func CheckError() {
+	if graph.start.name == "" || graph.end.name == "" {
+		SetError("No start or end defined")
+		return
+	}
+
+	for _, link := range graph.links {
+		if InRooms(link.room1) && InRooms(link.room2) {
+			if link.room1 == link.room2 {
+				SetError("Room links to itself")
+				return
+			}
+		} else {
+			SetError("Link to unknown room")
+			return
+		}
+	}
+
 }
 
 // AddNeighbours adds adjacent Rooms to the given Room
@@ -102,8 +145,16 @@ func FindPaths() {
 }
 
 var index int
+var maxIters int
+var iters int
 
 func dfs(roomName string, path []string) {
+	if iters >= maxIters {
+		SetError("Invalid data format")
+		return
+	}
+	iters++
+
 	room := *graph.rooms[roomName]
 	path = append(path, roomName)
 	if roomName == graph.end.name {
@@ -212,6 +263,48 @@ func InComb(comb1 PathsComb) bool {
 	return false
 }
 
+//PrintAll to print number of ants, rooms and links
+func PrintAll() {
+	fmt.Println(graph.ants)
+
+	fmt.Println("##start")
+	fmt.Print(graph.start.name)
+	fmt.Print(" ")
+	fmt.Print(graph.start.x)
+	fmt.Print(" ")
+	fmt.Print(graph.start.y)
+	fmt.Println()
+
+	for r := range graph.rooms {
+		if r != graph.start.name || r != graph.end.name {
+			fmt.Print(graph.rooms[r].name)
+			fmt.Print(" ")
+			fmt.Print(graph.rooms[r].x)
+			fmt.Print(" ")
+			fmt.Print(graph.rooms[r].y)
+			fmt.Println()
+		}
+	}
+
+	fmt.Println("##end")
+	fmt.Print(graph.end.name)
+	fmt.Print(" ")
+	fmt.Print(graph.end.x)
+	fmt.Print(" ")
+	fmt.Print(graph.end.y)
+	fmt.Println()
+
+	for _, link := range graph.links {
+		fmt.Print(link.room1)
+		fmt.Print("-")
+		fmt.Print(link.room2)
+		fmt.Println()
+	}
+
+	fmt.Println()
+
+}
+
 // FindSolution to find solution
 func FindSolution() {
 	var finalDecision map[int]int
@@ -256,11 +349,11 @@ func FindSolution() {
 	graph.decision = finalDecision
 	graph.iterations = minIterations
 
-	fmt.Println(graph.iterations)
+	// fmt.Println(graph.iterations)
 }
 
-// GetIters to print output in required format
-func GetIters() {
+// GetSolution to print output in required format
+func GetSolution() {
 
 	answer := make([]string, graph.iterations)
 	newDecision := make(map[int][]int)
