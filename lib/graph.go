@@ -70,6 +70,10 @@ func AddNeighbours() {
 
 	graph.start = *graph.rooms[graph.start.name]
 	graph.end = *graph.rooms[graph.end.name]
+
+	if len(graph.start.neighbours) == 0 || len(graph.end.neighbours) == 0 {
+		SetError("No connections between start and end rooms")
+	}
 }
 
 var visited []string
@@ -324,24 +328,5 @@ func GetIters() {
 		fmt.Println(ans)
 
 	}
-
-	// fmt.Println(answer)
-
-	// for i := 0; i < graph.iterations; i++ {
-
-	// 	for pathIndex, ants := range newDecision {
-	// 		if len(ants) > 0 {
-	// 			for j := 0; j < i+1; j++ {
-	// 				for antName, roomInd := range ants[j] {
-	// 					if roomInd == graph.mapPaths[pathIndex].weight {
-	// 						continue
-	// 					}
-	// 					answer[i] += "L" + string(antName) + " " + string(graph.mapPaths[pathIndex].path[ants[j][antName]]+1)
-	// 					ants[j][antName]++
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 }

@@ -62,6 +62,10 @@ func ParseDataFromFile(dataStr string) {
 		SetError("Invalid data format")
 		return
 	}
+	if num <= 0 {
+		SetError("Invalid number of ants")
+		return
+	}
 	graph.ants = num
 
 	temp = ""
@@ -78,7 +82,7 @@ func ParseDataFromFile(dataStr string) {
 				marker = true
 				i = i + 2
 			} else {
-				for dataStr[i] != '\n' {
+				for i < length && dataStr[i] != '\n' {
 					i++
 				}
 				i++

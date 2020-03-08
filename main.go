@@ -28,6 +28,12 @@ func main() {
 
 	solver.AddNeighbours()
 
+	occured, message = solver.GetError()
+	if occured {
+		fmt.Println("ERROR: " + message)
+		return
+	}
+
 	solver.FindPaths()
 
 	solver.FindPathsCombn()
