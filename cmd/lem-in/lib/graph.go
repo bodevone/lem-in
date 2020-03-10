@@ -119,6 +119,27 @@ func AddNeighbours() {
 	}
 }
 
+// StartEndConnected to check if start and end rooms are connected
+func StartEndConnected() bool {
+	for _, link := range graph.links {
+		if (link.room1 == graph.start.name && link.room2 == graph.end.name) || (link.room2 == graph.start.name && link.room1 == graph.end.name) {
+			return true
+		}
+	}
+	return false
+}
+
+// PrintStartEnd to print result if start and end connected
+func PrintStartEnd() {
+	for i := 1; i <= graph.ants; i++ {
+		if i > 1 {
+			fmt.Print(" ")
+		}
+		fmt.Print("L" + strconv.Itoa(i) + "-" + graph.end.name)
+	}
+	fmt.Println()
+}
+
 var visited []string
 
 // FindPaths to find all possible paths

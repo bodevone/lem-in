@@ -39,6 +39,13 @@ func main() {
 		return
 	}
 
+	solver.PrintAll()
+
+	if solver.StartEndConnected() {
+		solver.PrintStartEnd()
+		return
+	}
+
 	solver.FindPaths()
 	if occured {
 		fmt.Println("ERROR: " + message)
@@ -46,8 +53,6 @@ func main() {
 	}
 
 	solver.FindPathsCombn()
-
-	solver.PrintAll()
 
 	solver.FindSolution()
 
