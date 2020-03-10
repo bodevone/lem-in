@@ -30,6 +30,12 @@
         var drawBool = false
         var stop = false
 
+        var maxX = 0
+        var maxY = 0
+        var minX = 0
+        var minY = 0
+        var stepX = 0
+        var stepY = 0
 
         function setup() {
             createCanvas(window.innerWidth, window.innerHeight)
@@ -97,33 +103,6 @@
         }
 
         function drawRoomsRepeat() {
-            var maxX = 0
-            var maxY = 0
-            for (const [name, room] of Object.entries(globalData.Rooms)) {
-                if (room.X > maxX) {
-                    maxX = room.X
-                }
-                if (room.Y > maxY) {
-                    maxY = room.Y
-                }
-            }
-
-            for (const [name, room] of Object.entries(globalData.Rooms)) {
-                if (room.X > maxX) {
-                    maxX = room.X
-                }
-                if (room.Y > maxY) {
-                    maxY = room.Y
-                }
-            }
-
-            maxX += 2
-            maxY += 2
-            var height = window.innerHeight
-            var width = window.innerWidth
-
-            var stepX = width / maxX
-            var stepY = height / maxY
 
             for (const [name, room] of Object.entries(globalData.Links)) {
                 stroke('rgb(0,255,0)')
@@ -141,20 +120,20 @@
                 // textSize(30)
                 // text(room.Name, (room.X+1)*stepX-8, (room.Y+1)*stepY+50)
                 fill('rgb(0,255,0)')
-                circle((room.X+1)*stepX, (room.Y+1)*stepY, 50)
+                circle((room.X+1)*stepX-minX/2, (room.Y+1)*stepY-minY/2, 50)
             }
 
             // textSize(30)
             fill(color('red'))
             // text(globalData.Start.Name, (globalData.Start.X+1)*stepX-8, (globalData.Start.Y+1)*stepY+50);
             strokeWeight(5)
-            circle((globalData.Start.X+1)*stepX, (globalData.Start.Y+1)*stepY, 50)
+            circle((globalData.Start.X+1)*stepX-minX/2, (globalData.Start.Y+1)*stepY-minY/2, 50)
 
             strokeWeight(0)
             // textSize(30)
             // text(globalData.End.Name, (globalData.End.X+1)*stepX-8, (globalData.End.Y+1)*stepY+55)
             strokeWeight(5)
-            circle((globalData.End.X+1)*stepX, (globalData.End.Y+1)*stepY, 50)
+            circle((globalData.End.X+1)*stepX-minX/2, (globalData.End.Y+1)*stepY-minX/2, 50)
 
         }
 
@@ -163,8 +142,6 @@
                 ants.push(globalData.Start.Name);
             }
 
-            var maxX = 0
-            var maxY = 0
             for (const [name, room] of Object.entries(globalData.Rooms)) {
                 if (room.X > maxX) {
                     maxX = room.X
@@ -175,8 +152,8 @@
             }
 
 
-            var minX = globalData.Start.X
-            var minY = globalData.Start.Y
+            minX = globalData.Start.X
+            minY = globalData.Start.Y
 
             for (const [name, room] of Object.entries(globalData.Rooms)) {
                 if (room.X < minX) {
@@ -197,13 +174,12 @@
             // diffX += 2
             // diffY += 2
 
-
-            var stepX = width / maxX
-            var stepY = height / maxY
+            stepX = width / maxX
+            stepY = height / maxY
 
             coords = {}
             for (const [name, room] of Object.entries(globalData.Rooms)) {
-                coords[name] = [(room.X+1)*stepX, (room.Y+1)*stepY]
+                coords[name] = [(room.X+1)*stepX-minX/2, (room.Y+1)*stepY-minY/2]
             }
             globalDict = coords
             for (const [name, room] of Object.entries(globalData.Links)) {
@@ -222,20 +198,20 @@
                 // textSize(30)
                 // text(room.Name, (room.X+1)*stepX-8, (room.Y+1)*stepY+50)
                 fill('rgb(0,255,0)')
-                circle((room.X+1)*stepX, (room.Y+1)*stepY, 50)
+                circle((room.X+1)*stepX-minX/2, (room.Y+1)*stepY-minY/2, 50)
             }
 
             // textSize(30)
             fill(color('red'))
             // text(globalData.Start.Name, (globalData.Start.X+1)*stepX-8, (globalData.Start.Y+1)*stepY+50);
             strokeWeight(5)
-            circle((globalData.Start.X+1)*stepX, (globalData.Start.Y+1)*stepY, 50)
+            circle((globalData.Start.X+1)*stepX-minX/2, (globalData.Start.Y+1)*stepY-minY/2, 50)
 
             strokeWeight(0)
             // textSize(30)
             // text(globalData.End.Name, (globalData.End.X+1)*stepX-8, (globalData.End.Y+1)*stepY+55)
             strokeWeight(5)
-            circle((globalData.End.X+1)*stepX, (globalData.End.Y+1)*stepY, 50)
+            circle((globalData.End.X+1)*stepX-minX/2, (globalData.End.Y+1)*stepY-minY/2, 50)
 
         }
 
