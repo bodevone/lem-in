@@ -47,12 +47,18 @@ func main() {
 	}
 
 	solver.FindPaths()
+	occured, message = solver.GetError()
 	if occured {
 		fmt.Println("ERROR: " + message)
 		return
 	}
 
 	solver.FindPathsCombn()
+	occured, message = solver.GetError()
+	if occured {
+		fmt.Println("ERROR: " + message)
+		return
+	}
 
 	solver.FindSolution()
 

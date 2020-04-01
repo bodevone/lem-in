@@ -72,7 +72,7 @@ var graph Graph
 // InitGraph to make map filed in Graph
 func InitGraph() {
 	graph.rooms = make(map[string]*Room)
-	maxIters = 9999
+	maxIters = 1000
 }
 
 // CheckError to check for errors
@@ -114,9 +114,6 @@ func AddNeighbours() {
 	graph.start = *graph.rooms[graph.start.name]
 	graph.end = *graph.rooms[graph.end.name]
 
-	if len(graph.start.neighbours) == 0 || len(graph.end.neighbours) == 0 {
-		SetError("No connections between start and end rooms")
-	}
 }
 
 // StartEndConnected to check if start and end rooms are connected
@@ -163,6 +160,10 @@ func FindPaths() {
 		graph.mapPaths[p.index] = p
 	}
 
+	if len(graph.paths) == 0 {
+		SetError("No connections between start and end rooms")
+	}
+
 }
 
 var index int
@@ -170,11 +171,11 @@ var maxIters int
 var iters int
 
 func dfs(roomName string, path []string) {
-	if iters >= maxIters {
-		SetError("Invalid data format")
-		return
-	}
-	iters++
+	// if iters >= maxIters {
+	// 	SetError("Invalid data format")
+	// 	return
+	// }
+	// iters++
 
 	room := *graph.rooms[roomName]
 	path = append(path, roomName)
@@ -247,9 +248,7 @@ func FindPathsCombn() {
 			graph.pathsCombs = append(graph.pathsCombs, pathsComb)
 		}
 	}
-	// for _, comb := range graph.pathsCombs {
-	// 	fmt.Println(comb.paths)
-	// }
+
 }
 
 // SortComb to sort paths in combination by index and weight
@@ -286,6 +285,7 @@ func InComb(comb1 PathsComb) bool {
 
 //PrintAll to print number of ants, rooms and links
 func PrintAll() {
+
 	fmt.Println(graph.ants)
 
 	fmt.Println("##start")
